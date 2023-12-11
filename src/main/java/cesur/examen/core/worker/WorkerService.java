@@ -27,11 +27,30 @@ public class WorkerService {
     Remember Date().
     Returns the new updated worker, null if fails or dni doesn't exist.
     */
+    private static final WorkerDAO workerDAO = new WorkerDAO();
+
     public static Worker renovateWorker(String dni){
-        Worker out = null;
+        Worker out = workerDAO.getWorkerByDNI(dni);
 
-        /* Make implementation here ...  */
+        if(out != null){
+            //Obtener fecha actual
+            Date currentDate = new Date(System.currentTimeMillis());
 
-        return out;
+            //Actualizar el campo from
+            out.setFrom(currentDate);
+
+            // Actualizar el trabajador en la base de datos
+            Worker updatedWorker = workerDAO.update(out);
+
+            if (updatedWorker != null) {
+                return updatedWorker;
+            } else {
+                // La actualización falló
+                return null;
+            }
+        } else {
+            // El trabajador con el DNI dado no existe
+            return null;
+        }
     }
 }

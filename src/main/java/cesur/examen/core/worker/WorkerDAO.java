@@ -22,9 +22,9 @@ import java.util.List;
 @Log public class WorkerDAO implements DAO<Worker> {
 
     /* Please, use this constants for the queries */
-    private final String QUERY_ORDER_BY = "";
+    private final String QUERY_ORDER_BY = "Select * from trabajador order by desde";
     private final String QUERY_BY_DNI = "Select * from trabajador where dni=?";
-    private final String UPDATE_BY_ID = "Update * from trabajador where id=?";
+    private final String UPDATE_BY_ID = "Update trabajador set nombre=?, dni=?, desde=? where id=?";
 
     @Override
     public Worker save(Worker worker) {
@@ -43,7 +43,19 @@ import java.util.List;
 
         /* Make implementation here ...  */
         try(PreparedStatement st = JDBCUtils.getConn().prepareStatement(UPDATE_BY_ID)){
+            st.setString(1, worker.getName());
+            st.setString(2, worker.getDni());
+            st.setDate(3, new java.sql.Date(worker.getFrom().getTime())); // Convertir la fecha
+            st.setLong(4, worker.getId());
 
+            int colAfectadas = st.executeUpdate();
+
+            if (colAfectadas > 0) {
+                out = worker; // Devuelve el trabajador actualizado
+                log.info("Trabajador actualizado correctamente.");
+            } else {
+                log.warning("No se encontró el trabajador en la base de datos.");
+            }
         }catch (SQLException e){
             log.severe("Error in updateWorkerById()");
             throw new RuntimeException(e);
@@ -109,6 +121,22 @@ import java.util.List;
         ArrayList<Worker> out = new ArrayList<>(0);
 
         /* Make implementation here ...  */
+        try (Statement st = JDBCUtils.getConn().createStatement()){
+            ResultSet rs = st.executeQuery(QUERY_ORDER_BY);
+
+            while (rs.next()){
+                Worker worker = new Worker();
+                worker.setId(rs.getLong("id"));
+                worker.setName(rs.getString("nombre"));
+                worker.setDni(rs.getString("dni"));
+                worker.setFrom(rs.getDate("desde"));
+                out.add(worker);
+            }
+            log.info("Trabajadores añadidos correctamente");
+        } catch (SQLException e) {
+            log.severe("Error al rellenar a los trabajadores");
+            throw new RuntimeException(e);
+        }
 
         return out;
     }
