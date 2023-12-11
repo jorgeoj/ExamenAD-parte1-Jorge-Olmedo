@@ -12,8 +12,8 @@ import java.util.List;
  * EXAMEN DE ACCESO A DATOS
  * Diciembre 2023
  *
- * Nombre del alumno:
- * Fecha:
+ * Nombre del alumno: Jorge Olmedo Jiménez
+ * Fecha: 11/12/2023
  *
  * No se permite escribir en consola desde las clases DAO, Service y Utils usando System.out.
  * En su lugar, usa log.info(), log.warning() y log.severe() para mostrar información interna
@@ -24,7 +24,7 @@ import java.util.List;
     /* Please, use this constants for the queries */
     private final String QUERY_ORDER_BY = "";
     private final String QUERY_BY_DNI = "Select * from trabajador where dni=?";
-    private final String UPDATE_BY_ID = "";
+    private final String UPDATE_BY_ID = "Update * from trabajador where id=?";
 
     @Override
     public Worker save(Worker worker) {
@@ -42,7 +42,12 @@ import java.util.List;
         Worker out = null;
 
         /* Make implementation here ...  */
+        try(PreparedStatement st = JDBCUtils.getConn().prepareStatement(UPDATE_BY_ID)){
 
+        }catch (SQLException e){
+            log.severe("Error in updateWorkerById()");
+            throw new RuntimeException(e);
+        }
         return out;
     }
 

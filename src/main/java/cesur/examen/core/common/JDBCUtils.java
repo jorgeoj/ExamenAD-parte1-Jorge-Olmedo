@@ -2,16 +2,18 @@ package cesur.examen.core.common;
 
 import lombok.extern.java.Log;
 
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 /**
  * EXAMEN DE ACCESO A DATOS
  * Diciembre 2023
  *
- * Nombre del alumno:
- * Fecha:
+ * Nombre del alumno: Jorge Olmedo Jiménez
+ * Fecha: 11/12/2023
  *
  * No se permite escribir en consola desde las clases DAO, Service y Utils usando System.out.
  * En su lugar, usa log.info(), log.warning() y log.severe() para mostrar información interna
@@ -27,18 +29,21 @@ public class JDBCUtils {
      * Remember to open an InputStream to a file located in resource folder using
      * JDBCUtils.class.getClassLoader().getResourceAsStream()
      */
-    private static final Connection conn;
+    private static Connection conn;
 
     static{
-
         try{
-
             conn = null;
             /* Make implementation here ...  */
-
-            if(conn==null) log.info("JDBCUtils Not implemented yet!");
-            else log.info("Succesfully connected!");
-
+            if (conn == null) {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                String url = "jdbc:mysql://localhost:3306/examenad";
+                String username = "root";
+                String password = "";
+                conn = DriverManager.getConnection(url, username, password);
+                if(conn==null) log.info("JDBCUtils Not implemented yet!");
+                else log.info("Succesfully connected!");
+            }
         }catch( Exception ex){
             log.severe("Error connecting to database");
             throw new RuntimeException("Error connecting to database");
